@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta charset="utf-8" />
+	</head>
+	<script src="./web3.min.js"></script>
+	<body>
+		<script>
+			window.onload = function () {
+			// check to see if user has metamask addon installed on his browser. check to make sure web3 is defined
+				web3 = new Web3(web3.currentProvider);
+				window.ethereum.enable();
+				globalContract = new web3.eth.Contract(globalAbi, globalAddress);
+				globalContract.options.from = '0x57b76543948f582c8324127ceb51b0577f7c3129';
+				getvalue();
+			}
+
+			var abi = [
+				{
+					"constant": true,
+					"inputs": [],
+					"name": "value",
+					"outputs": [
+						{
+							"name": "",
+							"type": "uint256"
+						}
+					],
+					"payable": false,
+					"stateMutability": "view",
+					"type": "function"
+				},
+				{
+					"constant": false,
+					"inputs": [
+						{
+							"name": "new_value",
+							"type": "uint256"
+						}
+					],
+					"name": "set",
+					"outputs": [],
+					"payable": false,
+					"stateMutability": "nonpayable",
+					"type": "function"
+				},
+				{
+					"constant": true,
+					"inputs": [],
+					"name": "get",
+					"outputs": [
+						{
+							"name": "",
+							"type": "uint256"
+						}
+					],
+					"payable": false,
+					"stateMutability": "view",
+					"type": "function"
+				}
+			]
+			var address;
+			var contract;
+
+			var globalAbi = [
+				{
+					"constant": false,
+					"inputs": [],
+					"name": "makeNew",
+					"outputs": [],
+					"payable": false,
+					"stateMutability": "nonpayable",
+					"type": "function"
+				},
+				{
+					"inputs": [],
+					"payable": false,
+					"stateMutability": "nonpayable",
+					"type": "constructor"
+				},
+				{
+					"constant": true,
+					"inputs": [],
+					"name": "getAddress",
+					"outputs": [
+						{
+							"name": "",
+							"type": "address"
+						}
+					],
+					"payable": false,
+					"stateMutability": "view",
+					"type": "function"
+				}
+			];
+			var globalAddress = '0xbf18f981911c8ff6a9be54f4f8bf43bebbe21deb';
+			var globalContract;
+			//function to retrieve the last inserted value on the blockchain
+			function createContract() {
+				try {
+					globalContract.methods.makeNew().send(function (error, result) {
+						if (!error) {
+							alert("yo no error");
+							console.log(result);
+							globalContract.methods.getAddress().call(function (error, result) {
+								if (!error) {
+									alert("nigga no error");
+									console.log(result);
+									contract = new web3.eth.Contract(abi, address);
+									contract.options.from = '0x57b76543948f582c8324127ceb51b0577f7c3129';
+								} else {
+									alert("nigga error");
+									console.log(error);
+								}
+							});
+						} else {
+							alert("yo error");
+							console.log(error);
+						}
+					});
+				} catch (err) {
+					alert(err);
+				}
+			}
+
+			function getvalue() {
+				try {
+					//call the get function of our SimpleStorage contract
+					contract.methods.get().call(function (err, xname) {
+						if (err) { console.log(err) }
+						if (xname) {
+						//display value on the webpage
+							document.getElementById("xbalance").innerHTML = "last inserted value into the blockchain is : " + xname;
+						}
+					});
+				}
+				catch (err) {
+					document.getElementById("xbalance").innerHTML = err;
+				}
+			}
+			// function to add a new integer value to the blockchain
+			function setvalue() {
+				try {
+					contract.methods.set(document.getElementById("xvalue")).send(function (error, result) {
+						if (!error) {
+							console.log(result);
+						} else {
+							console.log(error);
+						}
+					});
+				} catch (err) {
+					document.getElementById("xvalue").innerHTML = err;
+				}
+			}
+		</script>
+		<center>
+			<div id="metamask"></div>
+			<h3>Insert and retrieve value on the blockchain</h3>
+			<br />
+			<table>
+				<tr>
+					<td></td>
+					<td>
+						<div id="xbalance"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>Insert a new value :</td>
+					<td>
+						<input id="xvalue" type="text" />
+						<input id="Button1" type="button" onclick="setvalue()" value="Add to Blockchain" />
+						<input id="Button2" type="button" onclick="createContract()" value="Create Order" />
+					</td>
+				</tr>
+			</table>
+		</center>
+	</body>
+</html>
