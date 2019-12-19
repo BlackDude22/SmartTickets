@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta charset="utf-8" />
+	</head>
+	<script src="./web3.min.js"></script>
+	<body>
+		<script>
+			window.addEventListener('load', async () => {
+			    // Modern dapp browsers...
+			    if (window.ethereum) {
+			        window.web3 = new Web3(ethereum);
+			        try {
+			            // Request account access if needed
+			            await ethereum.enable();
+			            globalContract = new web3.eth.Contract(globalAbi, globalAddress);
+			            setAddress();
+			        } catch (error) {
+			            // User denied account access...
+			        }
+			    }
+			    // Legacy dapp browsers...
+			    else if (window.web3) {
+			        window.web3 = new Web3(web3.currentProvider);
+			        var accounts = await web3.eth.getAccounts();
+					currentAccount = accounts[0];
+			    }
+			    // Non-dapp browsers...
+			    else {
+			        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+			    }
+			});
+
+			window.ethereum.on('accountsChanged', function (accounts) {
+				currentAccount = accounts[0];
+				setAddress();
+			});
+
+			var abi = [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "seller",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_section",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_row",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_seat",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_price",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "addBuyer",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_section",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_row",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_seat",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_price",
+				"type": "uint256"
+			}
+		],
+		"name": "addTicket",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "buyerAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "claim",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "flag",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getAmountPaid",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getAmountRefund",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getContractDetails",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "payForTicket",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "redeemTicket",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "refund",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "removeTicket",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "sellerAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ticketflag",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+			var address;
+			var contract;
+
+			var globalAbi = [
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_section",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_row",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_seat",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_price",
+				"type": "uint256"
+			}
+		],
+		"name": "createNewContract",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "seller",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+			var globalAddress = '0x1981de1e94e2afd6e1caf1097cd22f30ed282d26';
+			var globalContract;
+			var currentAddress;
+			//function to retrieve the last inserted value on the blockchain
+			function createContract() {
+				try {
+					var section = document.getElementById("section").value;
+					var row = document.getElementById("row").value;
+					var seat = document.getElementById("seat").value;
+					var time = new Date(document.getElementById("time").value).getTime()/1000;
+					var price = document.getElementById("price").value;
+					alert(section);
+					globalContract.methods.createNewContract(section, row, seat, time, price).send({from: currentAccount, gas: 5000000}).then(function (result, error) {
+						if (!error) {
+							console.log(result);
+							setAddress();
+						} else {
+							console.log(error);
+						}
+					});
+				} catch (err) {
+					console.log(err);
+				}
+			}
+
+			function setAddress() {
+				try {
+					globalContract.methods.getAddress().call({from: currentAccount, gas: 5000000}).then(function (result, error) {
+						if (!error) {
+							contract = new web3.eth.Contract(abi);
+							contract.options.address = result;
+							console.log("Contract address set to " + result);
+							updateDisplay();
+						} else {
+							console.log(error);
+							console.log(result);
+						}
+					});
+				}
+				catch (err) {
+					console.log(err);
+				}
+			}
+
+			function pay() {
+				try {
+					contract.methods.payForTicket().send({from: currentAccount, gas: 5000000, value: 1000000000000000000}).then(function (result, error) {
+						if (!error) {
+							console.log(result);
+						} else {
+							console.log(error);
+						}
+					});
+				}
+				catch (err) {
+					console.log(err);
+				}
+			}
+
+			function claim() {
+				try {
+					contract.methods.claim().send({from: currentAccount, gas: 5000000}).then(function (result, error) {
+						if (!error) {
+							console.log(result);
+						} else {
+							console.log(error);
+						}
+					});
+				}
+				catch (err) {
+					console.log(err);
+				}
+			}
+
+			function updateDisplay(){
+				try {
+					contract.methods.getContractDetails().call({from: currentAccount, gas: 500000000}).then(function (result, error) {
+						if (!error) {
+							document.getElementById("paid_display").innerHTML = result[0];
+							document.getElementById("excess_display").innerHTML = result[1];
+							document.getElementById("section_display").innerHTML = result[2];
+							document.getElementById("row_display").innerHTML = result[3];
+							document.getElementById("seat_display").innerHTML = result[4];
+							document.getElementById("time_display").innerHTML = result[5];
+							document.getElementById("price_display").innerHTML = result[6];
+							document.getElementById("ticket_exists").innerHTML = result[8];
+							document.getElementById("ticket_paid").innerHTML = result[7];
+							console.log(result);
+						} else {
+							console.log(error);
+						}
+					});
+				}
+				catch (err) {
+					console.log(err);
+				}
+			}
+			// function getvalue() {
+			// 	try {
+			// 		//call the get function of our SimpleStorage contract
+			// 		contract.methods.getAmountPaid().call({from: currentAccount}, function (err, xname) {
+			// 			if (err) { console.log(err) }
+			// 			if (xname) {
+			// 			//display value on the webpage
+			// 				// document.getElementById("xbalance").innerHTML = "last inserted value into the blockchain is : " + xname;
+			// 			}
+			// 		});
+			// 	}
+			// 	catch (err) {
+			// 		// document.getElementById("xbalance").innerHTML = err;
+			// 	}
+			// }
+			// // function to add a new integer value to the blockchain
+			// function setvalue() {
+			// 	try {
+			// 		contract.methods.addBuyer().send({from: currentAccount}, function (error, result) {
+			// 			if (!error) {
+			// 				console.log(result);
+			// 			} else {
+			// 				console.log(error);
+			// 			}
+			// 		});
+			// 	} catch (err) {
+			// 		document.getElementById("xvalue").innerHTML = err;
+			// 	}
+			// }
+
+			function time(){
+				return new Date(document.getElementById("time").value).getTime()/1000;
+			}
+		</script>
+		<center>
+			<div id="metamask"></div>
+			<h3>Insert and retrieve value on the blockchain</h3>
+			<br />
+			<form id="PlaceOrder" onsubmit="createContract()">
+				<table>
+					<tr>
+						<td>
+							<input id="section" type="text" required />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="row" type="text" required/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="seat" type="text" required />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="time" type="datetime-local" required/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="price" type="text" required/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="BUtton" type="button" value="confirm ticket" onclick="createContract()"/>
+							<!-- <input id="Button2" type="submit" value="Place Order" /> -->
+							 <!-- onclick="createContract()"  -->
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="BUtton2" type="button" value="pay" onclick="pay()"/>
+							<!-- <input id="Button2" type="submit" value="Place Order" /> -->
+							 <!-- onclick="createContract()"  -->
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="BUtton2" type="button" value="claim" onclick="claim()"/>
+							<!-- <input id="Button2" type="submit" value="Place Order" /> -->
+							 <!-- onclick="createContract()"  -->
+						</td>
+					</tr>
+				</table>
+			</form>
+			<table>
+				<tr>
+					<td>
+						Ticket exists: <div id="ticket_exists"></div>
+					</td>
+					<td>
+					Ticket was paid for: <div id="ticket_paid"></div>
+					</td>
+					<td>
+					Section: <div id="section_display"></div>
+					</td>
+					<td>
+					Row: <div id="row_display"></div>
+					</td>
+					<td>
+					Seat: <div id="seat_display"></div>
+					</td>
+					<td>
+					Time: <div id="time_display"></div>
+					</td>
+					<td>
+					Price: <div id="price_display"></div>
+					</td>
+					<td>
+					Paid: <div id="paid_display"></div> wei
+					</td>
+					<td>
+					Excess: <div id="excess_display"></div>
+					</td>
+				</tr>
+				<tr>
+
+				</tr>
+			</table>
+		</center>
+	</body>
+</html>
